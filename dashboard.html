@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard</title>
+<style>
+  /* Estilos para os painéis */
+  #container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+  }
+  #top-panel {
+    flex: 1;
+    overflow: auto;
+  }
+  #bottom-panel {
+    flex: 1;
+    overflow: auto;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  th, td {
+    border: 1px solid black;
+    padding: 8px;
+    text-align: left;
+  }
+</style>
+</head>
+<body>
+
+<div id="container">
+  <div id="top-panel">
+    <!-- Conteúdo do primeiro painel -->
+    <iframe src="indexBKP.html" style="width:100%; height:100%; border:none;"></iframe>
+  </div>
+  <div id="bottom-panel">
+    <!-- Lista com três colunas -->
+    <table>
+      <thead>
+        <tr>
+          <th>Cidade</th>
+          <th>Latitude</th>
+          <th>Longitude</th>
+        </tr>
+      </thead>
+      <tbody id="city-list">
+        <!-- Aqui serão inseridos os dados da lista via JavaScript -->
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+  // Dados de exemplo para preencher a lista
+  var cities = [
+    { name: "New York", latitude: 40.7128, longitude: -74.0060 },
+    { name: "Tokyo", latitude: 35.6895, longitude: 139.6917 },
+    { name: "London", latitude: 51.5074, longitude: -0.1278 }
+  ];
+
+  // Função para preencher a lista com os dados
+  function populateCityList() {
+    var cityList = document.getElementById("city-list");
+    cities.forEach(function(city) {
+      var row = document.createElement("tr");
+      row.innerHTML = "<td>" + city.name + "</td><td>" + city.latitude + "</td><td>" + city.longitude + "</td>";
+      cityList.appendChild(row);
+    });
+  }
+
+  // Chamar a função para preencher a lista quando a página carregar
+  window.onload = populateCityList;
+</script>
+
+</body>
+</html>

@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mapa com Rota e Veículo Simulado</title>
+<style>
+    html,
+    body {
+        height: 100%;
+        margin: 0;
+    }
+    
+    #map {
+        height: 100%;
+        background: red;
+    }
+</style>
+</head>
+<body>
+<div id="map"></div>
+
+<script>
+    const startLocation = {
+        lat: -24.517796791652312,
+        lng: -48.84003924197971
+    };
+
+    const endLocation = {
+        lat: -24.506617707891284,
+        lng: -48.84448378505045
+    };
+
+    function initMap() {
+        const map = new google.maps.Map(document.getElementById('map'), {
+            center: startLocation,
+            zoom: 13
+        });
+
+        const directionsService = new google.maps.DirectionsService();
+        const directionsRenderer = new google.maps.DirectionsRenderer();
+
+        directionsService.route({
+            origin: startLocation,
+            destination: endLocation,
+            travelMode: google.maps.TravelMode.DRIVING
+        }, function(response, status) {
+            if (status === google.maps.DirectionsStatus.OK) {
+                directionsRenderer.setDirections(response);
+                directionsRenderer.setMap(map);
+
+                const steps = response.routes[0].overview_path;
+
+                const marker = new google.maps.Marker({
+                    map: map,
+                    position: {
+                        lat: steps[0].lat(),
+                        lng: steps[0].lng()
+                    },
+                    label: '🚘',
+                    zIndex: 1,
+                });
+
+                let i = 0;
+                const interval = setInterval(function() {
+                    i++;
+                    if (i === steps.length) {
+                        clearInterval(interval);
+                        return;
+                    }
+
+                    marker.setPosition({
+                        lat: steps[i].lat(),
+                        lng: steps[i].lng()
+                    });
+
+                }, 1000);
+            } else {
+                alert('Não foi possível obter direções: ' + status);
+            }
+        });
+    }
+</script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyApoFH-kjzWvsGqg1A5AP-AsOL9ZnVl9dQ&callback=initMap" async defer></script>
+</body>
+</html>

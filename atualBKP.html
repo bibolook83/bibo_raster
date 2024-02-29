@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Localização Minuto a Minuto</title>
+<style>
+  #map {
+    height: 400px;
+    width: 50%;
+    float: left;
+  }
+
+  #listview {
+    width: 50%;
+    float: left;
+  }
+</style>
+</head>
+<body>
+  <h1>Localização Minuto a Minuto</h1>
+  <div id="map"></div>
+  <div id="listview"></div>
+  
+  <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore.js"></script>
+  <script>
+   // Configuração do Firebase
+
+   const firebaseConfig = {
+    apiKey: "AIzaSyBxc7SU9htGURFHtRujvLhnsfmP4TsRRLY",
+    authDomain: "rastreador-9eea1.firebaseapp.com",
+    projectId: "rastreador-9eea1",
+    storageBucket: "rastreador-9eea1.appspot.com",
+    messagingSenderId: "744405892454",
+    appId: "1:744405892454:web:9048326dd09aada86a1ca7",
+    measurementId: "G-8ZVNCEZQ8G"
+    };
+
+    // Inicializa o Firebase
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    // Função para inicializar o mapa
+    function initMap() {
+      // Inicia o mapa com uma localização padrão
+      var map = new google.maps.Map(document.getElementById("map"), {
+        zoom: 15,
+        center: { lat: 0, lng: 0 } // Ponto central padrão
+      });
+
+      // Atualiza a localização do usuário a cada minuto
+      setInterval(function() {
+        // Verifica se o navegador suporta geolocalização
+        if ("geolocation" in navigator) {
+          // Obtém a localização do usuário
+          navigator.geolocation.getCurrentPosition(function(position) {
+            var latitude = position.coords.latitude;
+            var longitude = position.coords.longitude;
+
+            // Salva a localização no Firestore
+            db.collection("localizacoes").add({
+              latitude: latitude,
+              longitude: longitude,
+              timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            })
+            .then(function(docRef) {
+              console.log("Localização gravada com sucesso:", docRef.id);
+            })
+            .catch(function(error) {
+              console.error("Erro ao gravar localização:", error);
+            });
+
+            // Atualiza o centro do mapa para a nova localização
+            var newCenter = new google.maps.LatLng(latitude, longitude);
+            map.setCenter(newCenter);
+
+            // Adiciona um marcador para a nova localização
+            var marker = new google.maps.Marker({
+              position: newCenter,
+              map: map,
+              title: "Sua Localização"
+            });
+          });
+        } else {
+          console.log("Geolocalização não é suportada pelo seu navegador.");
+        }
+      }, 60000); // Atualiza a cada minuto (em milissegundos)
+
+      // Recupera as posições gravadas e exibe na listview
+      db.collection("localizacoes").orderBy("timestamp", "desc").onSnapshot(function(querySnapshot) {
+        var listview = document.getElementById("listview");
+        listview.innerHTML = ""; // Limpa a listview
+
+        querySnapshot.forEach(function(doc) {
+          var data = doc.data();
+          var listItem = document.createElement("div");
+          listItem.textContent = "Latitude: " + data.latitude + ", Longitude: " + data.longitude + ", Timestamp: " + data.timestamp.toDate();
+          listview.appendChild(listItem);
+        });
+      });
+    }
+  </script>
+  <!-- Importa a API do Google Maps -->
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyApoFH-kjzWvsGqg1A5AP-AsOL9ZnVl9dQ&callback=initMap" async defer></script>
+</body>
+</html>

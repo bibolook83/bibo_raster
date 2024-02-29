@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Localização Minuto a Minuto</title>
+<style>
+  #map-container {
+    float: left;
+    width: 70%;
+    height: 100vh;
+    position: relative;
+  }
+  
+  #map {
+    height: 100%;
+    width: 100%;
+  }
+  
+  #location-list {
+    float: right;
+    width: 30%;
+    height: 100vh;
+    overflow-y: scroll;
+    padding: 0 10px;
+  }
+</style>
+</head>
+<body>
+  <div id="map-container">
+    <div id="map"></div>
+  </div>
+  <div id="location-list">
+    <h2>Últimas Localizações:</h2>
+    <ul id="locations"></ul>
+  </div>
+  
+  <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-firestore.js"></script>
+  <script>
+    // Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyBxc7SU9htGURFHtRujvLhnsfmP4TsRRLY",
+      authDomain: "rastreador-9eea1.firebaseapp.com",
+      projectId: "rastreador-9eea1",
+      storageBucket: "rastreador-9eea1.appspot.com",
+      messagingSenderId: "744405892454",
+      appId: "1:744405892454:web:9048326dd09aada86a1ca7",
+      measurementId: "G-8ZVNCEZQ8G"
+    };
+
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    function initMap() {
+      const map = new google.maps.Map(document.getElementById("map"), {
+        zoom: 15,
+        center: { lat: 0, lng: 0 }
+      });
+
+      setInterval(() => {
+        if ("geolocation" in navigator) {
+          navigator.geolocation.getCurrentPosition(position => {
+            const { latitude, longitude } = position.coords;
+
+            db.collection("localizacoes").add({
+              latitude: latitude,
+              longitude: longitude,
+              timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            })
+            .then(docRef => {
+              console.log("Localização gravada com sucesso:", docRef.id);
+            })
+            .catch(error => {
+              console.error("Erro ao gravar localização:", error);
+            });
+
+            const newCenter = new google.maps.LatLng(latitude, longitude);
+            map.setCenter(newCenter);
+
+            const marker = new google.maps.Marker({
+              position: newCenter,
+              map: map,
+              title: "Sua Localização"
+            });
+
+            showLocationList();
+          });
+        } else {
+          console.log("Geolocalização não é suportada pelo seu navegador.");
+        }
+      }, 60000);
+
+      function showLocationList() {
+        const locationList = document.getElementById("locations");
+        locationList.innerHTML = "";
+
+        db.collection("localizacoes").orderBy("timestamp", "desc").limit(5).get()
+          .then(querySnapshot => {
+            querySnapshot.forEach(doc => {
+              const data = doc.data();
+              const li = document.createElement("li");
+              li.textContent = `Latitude: ${data.latitude}, Longitude: ${data.longitude}, Timestamp: ${data.timestamp.toDate()}`;
+              locationList.appendChild(li);
+            });
+          })
+          .catch(error => {
+            console.error("Erro ao obter localizações:", error);
+          });
+      }
+    }
+  </script>
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyApoFH-kjzWvsGqg1A5AP-AsOL9ZnVl9dQ&callback=initMap" async defer></script>
+</body>
+</html>

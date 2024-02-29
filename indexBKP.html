@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>Live Tracking</title>
+  <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500" rel="stylesheet">
+  <link rel="stylesheet" type="text/css" href="css/main.css">
+</head>
+
+<body>
+  <div class="top-bar"><span class="tracker">Live Tracking</span></div>
+  <div id="map" class="map"></div>
+
+     <!-- update the version number as needed -->
+     <script defer src="/__/firebase/10.8.0/firebase-app-compat.js"></script>
+     <!-- include only the Firebase features as you need -->
+     <script defer src="/__/firebase/10.8.0/firebase-auth-compat.js"></script>
+     <script defer src="/__/firebase/10.8.0/firebase-database-compat.js"></script>
+     <script defer src="/__/firebase/10.8.0/firebase-firestore-compat.js"></script>
+     <script defer src="/__/firebase/10.8.0/firebase-functions-compat.js"></script>
+     <script defer src="/__/firebase/10.8.0/firebase-messaging-compat.js"></script>
+     <script defer src="/__/firebase/10.8.0/firebase-storage-compat.js"></script>
+     <script defer src="/__/firebase/10.8.0/firebase-analytics-compat.js"></script>
+     <script defer src="/__/firebase/10.8.0/firebase-remote-config-compat.js"></script>
+     <script defer src="/__/firebase/10.8.0/firebase-performance-compat.js"></script>
+     <!-- 
+       initialize the SDK after all desired features are loaded, set useEmulator to false
+       to avoid connecting the SDK to running emulators.
+     -->
+     <script defer src="/__/firebase/10.8.0/firebase-app.js"></script>
+     <script defer src="/__/firebase/10.8.0/firebase-database.js"></script>
+     <script defer src="/__/firebase/init.js"></script>
+     <script defer src="js/index.js"></script>
+     <!-- Change out the following API_KEY for your Maps API Key -->
+     <script defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyApoFH-kjzWvsGqg1A5AP-AsOL9ZnVl9dQ&callback=initMap"></script>
+
+</body>
+
+</html>
