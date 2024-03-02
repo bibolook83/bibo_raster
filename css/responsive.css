@@ -159,4 +159,6 @@
         width: 180px; 
     } 
     }
-    
+    .navcontainer {
+        display: none;
+    }
